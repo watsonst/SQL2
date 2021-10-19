@@ -1,0 +1,95 @@
+NOTES 10-18-2021
+
+drop table if exists Person;
+drop table if exists Job;
+
+
+create table Job (
+Id int identity(1,1) primary key not null, --constraints come after data type aut0-incrememnt in postgres
+Title varchar (255),
+Company varchar (255),
+);
+
+create table Person (
+ID int identity(1,1) primary key not null, --constraints come after data type aut0-incrememnt in postgres
+FirstName varchar (255),
+LastName varchar (255),
+Age int check (Age>=18),
+City varchar(255) default 'Detroit', -- This does all for all columns to default to detroit
+JobID int foreign key references Job(Id),
+Email varchar(255) not null unique, -- can't have two people with the same email
+);
+
+
+insert into Job (Title, Company)
+values
+	( 'CEO', 'Spacex'),
+	( 'Consultant', 'Slalom');
+
+insert into Person(FirstName, LastName, Age, JobId, Email)
+values
+	( 'John', 'Doe', 21, 2, 'a@a.com'),
+	( 'Jane', 'Doe', 21, 1, 'a1@a.com'),
+	( 'Elon', 'Musk', 50, 1, 'a2@a.com');
+
+
+insert into Person(FirstName, LastName, Age, JobId, Email) --Unique constraint
+values
+	( 'Paul', 'Deer', 25, 2, 'a@a.com');
+
+
+useful list of constraints https://www.w3schools.com/Sql/sql_constraints.asp
+
+alter table Person add Email varchar(255) -- same as above. Will show NULL since Column is added but no data
+
+alter table Person add City varchar(255) default 'Detroit' -- THIS IS DID NOT add detroit, returned null
+
+alter table Person drop column Email -- way to add/drop new column
+
+update Person Set Email='donotreply@gmail.com'where Email is null -- to update an existing value Update and set instead of select
+
+Select * from Person;
+Select * from Job;
+
+Select * from Person
+Join Job
+on person.JobID=job.Id;
+
+select FirstName, LastName from Person
+where Age = (select min(Age) from Person) --make sure this outputs one row if needed multiple use like or another
+
+
+
+DATES
+
+
+drop table if exists Calendar;
+
+
+create table Calendar (
+Id int identity(1,1) primary key not null,
+Title varchar (255),
+EventDate date, -- 'YYYY-MM-DD HH:MI:SS'
+);
+
+--Good reference link https://docs.microsoft.com/en-us/sql/t-sql/functions/date-and-time-data-types-and-functions-transact-sql?view=sql-server-ver15
+
+insert into Calendar (Title, EventDate) -- dates follow "YYYY-MM-DD" will parse it as a date even thought these are "strings"
+values
+	( 'Class', '2021-10-18'),
+	( 'Fix Car', '2021-10-15'),
+	( 'Buy Food', '2021-9-20'),
+	( 'Vacation', '2021-12-25');
+
+
+select min(EventDate) from Calendar;
+
+Select GetDate() -- gives today's date. Can use in subquery
+
+Select * from Calendar where EventDate >(select GetDate()); -- greater than after today/right now
+
+Select * from Calendar where EventDate between'2021-10-1' and '2021-11-1';
+
+Select SYSDATETIME();
+
+Select * from Calendar;
